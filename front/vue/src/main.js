@@ -9,6 +9,7 @@ import 'element-ui/lib/theme-chalk/index.css';
 //引入全局css
 import '@/assets/css/global.css'
 
+
 Vue.config.productionTip = false
 //使用ElementUI框架
 Vue.use(ElementUI, { size: 'small' });

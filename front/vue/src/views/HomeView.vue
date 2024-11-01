@@ -11,7 +11,7 @@
           <i class="el-icon-setting" style="margin-right: 20px;padding: auto;"></i>
           <el-dropdown-menu slot="dropdown">
             <!--新增按钮-->
-            <el-dropdown-item><span @click="dialogFormVisible = true">新增</span></el-dropdown-item>
+            <el-dropdown-item><span @click="handleAdd()">新增</span></el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
         <span>通讯录管理系统</span>
@@ -33,11 +33,11 @@
             <template slot-scope="scope">
               <el-button
                 size="mini"
-                @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+                @click="handleEdit(scope.row)">编辑</el-button>
               <el-button
                 size="mini"
                 type="danger"
-                @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+                @click="handleDelete(scope.row)">删除</el-button>
             </template>
           </el-table-column>  
         </el-table>
@@ -55,7 +55,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取 消</el-button>
-        <el-button type="primary" @click="dialogFormVisible = false">确 定</el-button>
+        <el-button type="primary" @click="save()">确 定</el-button>
       </div>
     </el-dialog>
 
@@ -63,6 +63,9 @@
 </template>
 
 <script>
+
+import request from '@/utils/request'
+
 export default {
   name: 'HomeView',
   data() {
@@ -87,19 +90,41 @@ export default {
       formLabelWidth: '120px',
       form: {
           name: '',
-          date1: '',
-          date2: '',
           delivery: false,
           type: [],
-          resource: '',
-          desc: '',
           phonenumber: ''
         },
     }
   },
+  created()
+  {
+    this.load()
+  },
+
   methods: {
-    //TODO save
-    //TODO delete
+    //功能逻辑
+    save()
+    {
+      request.post("http:///localhost:9090/user", this.form).then(
+        res=>{
+          this.load()
+        }
+      )
+      // console.log(this.form.name);
+      
+      this.dialogFormVisible = false;
+    },
+    load(){
+      request.get("http://localhost:9090/user").then(
+        res=>{
+          this.tableData = res
+        }
+      )
+    },
+    //业务逻辑
+    handleAdd(){
+      this.dialogFormVisible = true;
+    },
     clickTopIcon()
     {
       //console.log("click");
@@ -110,15 +135,19 @@ export default {
         this.currentImg = this.imgSrc_ruka;
       }
     },
-    handleEdit(index, row){
-      console.log(index,row);
+    handleEdit(row){
+      
       this.dialogFormVisible = true;
-      //TODO require
+      this.form = row;
       
     },
-    handleDelete(index, row){
-      console.log(index, row);
-      //TODO require
+    handleDelete(row){
+      // console.log(index, row);
+      request.delete("http://localhost:9090/user/"+row.id).then(
+        res=>{
+          this.load()
+        }
+      )
     }
   }
 }
